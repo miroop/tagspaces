@@ -74,6 +74,7 @@ define(function(require, exports, module) {
     tsPersManager.initPerspectives().then(function(result) {
       console.log("initPerspectives: " + result);
     }).catch(function(err) {
+      console.error(err);
       alert("initPerspectives: " + err);
     });
 
