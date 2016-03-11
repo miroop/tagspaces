@@ -1,0 +1,34 @@
+{
+  "name": "ZIP Opener",
+  "id": "viewerZIP",
+  "description": "A TagSpaces extension allowing you to preview the content of ZIP files.",
+  "type": "viewer",
+  "dependencies": {},
+  "devDependencies": {},
+  "authors": [
+    "TagSpaces Authors - http://tagspaces.org",
+    "Ilian Sapundshiev - http://ilian.me"
+  ],
+  "keywords": [
+    "",
+    ""
+  ],
+  "license": "MIT",
+  "main": [
+    "extension.js"
+  ],
+  "ignore": [
+    "Gruntfile.js"
+  ],
+  "private": true,
+  "homepage": "https://github.com/tagspaces/viewerZIP",
+  "_release": "d2f531a848",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "d2f531a8485e78a43c9a0669e90a349827a5afea"
+  },
+  "_source": "https://github.com/tagspaces/viewerZIP.git",
+  "_target": "*",
+  "_originalSource": "git+https://github.com/tagspaces/viewerZIP.git"
+}
