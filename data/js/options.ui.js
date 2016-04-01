@@ -209,7 +209,7 @@ define(function(require, exports, module) {
     var $languagesDropdown = $('#languagesList');
     $languagesDropdown.empty();
     TSCORE.Config.getSupportedLanguages().forEach(function(value) {
-      if (TSCORE.Config.getInterfaceLangauge() === value.iso) {
+      if (TSCORE.Config.getInterfaceLanguage() === value.iso) {
         $languagesDropdown.append($('<option>').attr('selected', 'selected').text(value.title).val(value.iso));
       } else {
         $languagesDropdown.append($('<option>').text(value.title).val(value.iso));
@@ -285,7 +285,7 @@ define(function(require, exports, module) {
       TSCORE.Config.setUseGenerateThumbnails($('#useGenerateThumbnails').is(':checked')); 
     }
     var interfaceLang = $('#languagesList').val();
-    TSCORE.Config.setInterfaceLangauge(interfaceLang);
+    TSCORE.Config.setInterfaceLanguage(interfaceLang);
     TSCORE.switchInterfaceLanguage(interfaceLang);
     TSCORE.Config.setPerspectives(collectPerspectivesData());
     TSCORE.Config.setSupportedFileTypes(collectSupportedFileTypesData());

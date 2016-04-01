@@ -82,52 +82,83 @@ define(function(require, exports, module) {
     $(document).ready(function() {
       reLayout();
 
-      var language = tsSettings.getInterfaceLangauge();
-      // "de-DE"
-      var langURLParam = getParameterByName('locale');
-      if (langURLParam.length > 1) {
+      var language = tsSettings.getInterfaceLanguage();
+
+      if (tsSettings.isFirstRun()) {
+        var browserLang = navigator.language || navigator.userLanguage;
+
+        var languageMatched;
+
+        tsSettings.getSupportedLanguages().forEach(function(value) {
+          if (browserLang === value.iso) {
+            language = browserLang;
+            languageMatched = true;
+          }
+        });
+
+        if (!languageMatched) {
+          tsSettings.getSupportedLanguages().forEach(function(value) {
+            if (value.iso.indexOf(browserLang) === 0) {
+              language = value.iso;
+            }
+          });
+        }
+
+        tsSettings.setInterfaceLanguage(language);
+        tsSettings.saveSettings();
+
+      }
+
+      var langURLParam = tsUtils.getURLParameter('locale');
+      if (langURLParam && langURLParam.length > 1) {
         language = langURLParam;
       }
-      switchInterfaceLanguage(language);
+
+      switchInterfaceLanguage(language).then(function() {
+        if (isNode || isElectron) {
+          tsIOApi.initMainMenu();
+        }
+
+        if (tsSettings.Settings.tagspacesList.length < 1) {
+          // Show getting started guide by no locations
+          tsCoreUI.startGettingStartedTour();
+        }
+      }).catch(function() {
+        console.warn("Language switching failed.");
+      });
+
       initKeyBindings();
       tsIOApi.checkAccessFileURLAllowed ? tsIOApi.checkAccessFileURLAllowed() : true;
-      // Show welcome dialog of first start
-      if (tsSettings.isFirstRun()) {
-        tsCoreUI.showWelcomeDialog();
-      }
-      // Show welcome dialog by no locations
-      if (tsSettings.Settings.tagspacesList.length < 1) {
-        tsCoreUI.startGettingStartedTour();
-      }
+
       if (isNode || isChrome || isElectron || isWeb) {
         // Handle command line argument in node-webkit
         tsIOApi.handleStartParameters(); // Handle minimizing to the tray in node-webkit
       }
-      console.log('Docoument ready finished. Layout initialized');
+      console.log('Document ready finished. Layout initialized');
       checkForNewVersion();
     });
   }
 
   function switchInterfaceLanguage(language) {
-    $.i18n.init({
-      ns: {
-        namespaces: [
-          'ns.common',
-          'ns.dialogs',
-          'ns.perspectiveList',
-          'ns.pro',
-        ]
-      },
-      lng: language,
-      debug: true,
-      fallbackLng: 'en_US'
-    }, function() {
-      $('[data-i18n]').i18n();
-      if (isNode || isElectron) {
-        tsIOApi.initMainMenu();
-      }
-    });
     exports.currentLanguage = language;
+    return new Promise(function(resolve, reject) {
+      $.i18n.init({
+        ns: {
+          namespaces: [
+            'ns.common',
+            'ns.dialogs',
+            'ns.perspectiveList',
+            'ns.pro',
+          ]
+        },
+        lng: language,
+        debug: true,
+        fallbackLng: 'en_US'
+      }, function() {
+        $('[data-i18n]').i18n();
+        resolve();
+      });
+    });
   }
 
   function initKeyBindings() {
@@ -172,13 +203,6 @@ define(function(require, exports, module) {
     } catch (e) {
       tsCoreUI.showAlertDialog($.i18n.t('ns.dialogs:enableLocalStorageAlert'), 'Error');
     }
-  }
-
-  function getParameterByName(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
-      results = regex.exec(location.search);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
   function updateNewVersionData(data) {
@@ -479,7 +503,6 @@ define(function(require, exports, module) {
   exports.removeFileModel = removeFileModel;
   exports.updateFileModel = updateFileModel;
   exports.switchInterfaceLanguage = switchInterfaceLanguage;
-  exports.getParameterByName = getParameterByName;
 
   // Proxying functions from tsCoreUI
   // TODO use TSCORE.UI instead

@@ -1,12 +1,26 @@
 {
   "name": "@@APPNAME",
   "description": "@@APPDESCRIPTION",
+  "author": "@@AUTHOR",
   "version": "@@VERSION.@@BUILD",
   "main": "electron/main.js",
   "dependencies": {
     "fs-extra": "~0.24.0"
   },
+  "devDependencies": {
+    "electron-prebuilt": "~0.36.9"
+  },
+  "build": {
+    "app-bundle-id": "@@FULLNAME",
+    "app-category-type": "@@APPCATEGORYOSX",
+    "platform": "@@PLATFORM",
+    "arch": "all",
+    "icon": "build/icon"
+  },
   "scripts": {
+    "postinstall": "install-app-deps",
+    "pack": "build",
+    "dist": "build",
     "start": "electron .",
     "test": "electron . -d"
   }
